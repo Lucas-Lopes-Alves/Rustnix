@@ -1,4 +1,6 @@
 use super::handlers_table::*;
+
+#[repr(C)]
 pub struct Registers {
     edi: u32,
     esi: u32,
@@ -14,10 +16,12 @@ pub struct Registers {
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn common_handler(r: &Registers) -> () {
+pub extern "C" fn common_handler(r: *mut Registers) -> () {
+    let regs = unsafe { &mut *r };
     unsafe {
-        if (HANDLERS[r.int_no].is_some()) {
-            HANDLERS[r.int_no]();
+        match (HANDLERS[(*r).int_no as usize]) {
+            Some(handler) => handler(regs),
+            None => {}
         }
     }
 }
