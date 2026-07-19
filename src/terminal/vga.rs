@@ -1,23 +1,25 @@
+use core::str::Bytes;
+
 pub enum VgaColor {
-    VgaColorBlack = 0,
-    VgaColorBlue = 1,
-    VgaColorGreen = 2,
-    VgaColorCyan = 3,
-    VgaColorRed = 4,
-    VgaColorMagenta = 5,
-    VgaColorBrown = 6,
-    VgaColorLightGrey = 7,
-    VgaColorDarkGrey = 8,
-    VgaColorLightBlue = 9,
-    VgaColorLightGreen = 10,
-    VgaColorLightCyan = 11,
-    VgaColorLightRed = 12,
-    VgaColorLightMagenta = 13,
-    VgaColorYellow = 14,
-    VgaColorWhite = 15,
+    Black = 0,
+    Blue = 1,
+    Green = 2,
+    Cyan = 3,
+    Red = 4,
+    Magenta = 5,
+    Brown = 6,
+    LightGrey = 7,
+    DarkGrey = 8,
+    LightBlue = 9,
+    LightGreen = 10,
+    LightCyan = 11,
+    LightRed = 12,
+    LightMagenta = 13,
+    Yellow = 14,
+    White = 15,
 }
 
-struct VgaWriter {
+pub struct VgaWriter {
     buffer: *mut u16,
     column: usize,
     row: usize,
@@ -25,19 +27,22 @@ struct VgaWriter {
 }
 
 impl VgaWriter {
-    pub fn new(color: VgaColor) -> Self {
+    pub fn new(fg: VgaColor, bg: VgaColor) -> Self {
         Self {
             buffer: 0xb8000 as *mut u16,
             column: 0,
             row: 0,
-            color: color as u8,
+            color: fg as u8 | ((bg as u8) << 4) as u8,
         }
     }
 
-    pub fn initialize(&self) {
-        for _i in 0..(80 * 25) {
+    pub fn initialize(&mut self) {
+        for _ in 0..(80 * 25) {
             self.putchar(b' ');
         }
+
+        self.column = 0;
+        self.row = 0;
     }
 
     pub fn putchar(&mut self, c: u8) {
