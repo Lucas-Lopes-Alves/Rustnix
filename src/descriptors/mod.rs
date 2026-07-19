@@ -1,2 +1,2 @@
 pub mod gdt;
-mod panic;
+pub mod idt;

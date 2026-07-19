@@ -1,5 +1,3 @@
-use core::str::Bytes;
-
 pub enum VgaColor {
     Black = 0,
     Blue = 1,
@@ -19,6 +17,9 @@ pub enum VgaColor {
     White = 15,
 }
 
+const VGA_WIDTH: usize = 80;
+// const VGA_HEIGHT: usize = 25;
+
 pub struct VgaWriter {
     buffer: *mut u16,
     column: usize,
@@ -27,12 +28,12 @@ pub struct VgaWriter {
 }
 
 impl VgaWriter {
-    pub fn new(fg: VgaColor, bg: VgaColor) -> Self {
+    pub fn new(text: VgaColor, background: VgaColor) -> Self {
         Self {
             buffer: 0xb8000 as *mut u16,
             column: 0,
             row: 0,
-            color: fg as u8 | ((bg as u8) << 4) as u8,
+            color: (text as u8) | ((background as u8) << 4),
         }
     }
 
@@ -46,10 +47,16 @@ impl VgaWriter {
     }
 
     pub fn putchar(&mut self, c: u8) {
-        let index = self.row * 80 + self.row;
+        let index = self.row * VGA_WIDTH + self.column;
         let character: u16 = ((self.color as u16) << 8) | c as u16;
         unsafe {
             self.buffer.add(index).write_volatile(character);
+        }
+
+        self.column += 1;
+        if self.column >= VGA_WIDTH {
+            self.row += 1;
+            self.column = 0;
         }
     }
 
