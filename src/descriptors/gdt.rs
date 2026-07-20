@@ -1,6 +1,6 @@
 // use core::ptr::{addr_of, addr_of_mut, write};
 
-#[repr(C)]
+#[repr(C, packed)]
 struct GdtEntry {
     limit_low: u16,
     base_low: u16,

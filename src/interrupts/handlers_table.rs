@@ -1,4 +1,5 @@
 use super::common_handler::Registers;
+use super::handler_functions::*;
 use crate::drivers::terminal::vga::VgaColor;
 use crate::drivers::terminal::vga::VgaWriter;
 use core::arch::asm;
@@ -6,19 +7,37 @@ use core::arch::asm;
 pub static mut HANDLERS: [Option<fn(&mut Registers)>; 256] = {
     let mut a: [Option<fn(&mut Registers)>; 256] = [None; 256];
     a[0] = Some(divide_by_zero);
+    // a[1] = Some(generic_handler);
+    // a[2] = Some(non_maskable_interrupt_handler);
+    // a[3] = Some(generic_handler);
+    // a[4] = Some(generic_handler);
+    // a[5] = Some(generic_handler);
+    // a[6] = Some(generic_handler);
+    // a[7] = Some(generic_handler);
+    // a[8] = Some(double_fault_handler);
+    // a[9] = Some(generic_handler);
+    // a[10] = Some(generic_handler);
+    // a[11] = Some(generic_handler);
+    // a[12] = Some(generic_handler);
+    // a[13] = Some(generic_handler);
+    // a[14] = Some(generic_handler);
+    // a[15] = Some(generic_handler);
+    // a[16] = Some(generic_handler);
+    // a[17] = Some(generic_handler);
+    // a[18] = Some(generic_handler);
+    // a[19] = Some(generic_handler);
+    // a[20] = Some(generic_handler);
+    // a[21] = Some(generic_handler);
+    // a[22] = Some(generic_handler);
+    // a[23] = Some(generic_handler);
+    // a[24] = Some(generic_handler);
+    // a[25] = Some(generic_handler);
+    // a[26] = Some(generic_handler);
+    // a[27] = Some(generic_handler);
+    // a[28] = Some(generic_handler);
+    // a[29] = Some(generic_handler);
+    // a[30] = Some(generic_handler);
+    // a[31] = Some(generic_handler);
+    // a[33] = Some(keyboard_handler);
     a
 };
-
-fn divide_by_zero(r: &mut Registers) {
-    let characters: &str = "ERROR,Division by zero!";
-    let mut terminal = VgaWriter::new(VgaColor::LightGrey, VgaColor::Black);
-    for i in characters.bytes() {
-        terminal.putchar(i);
-    }
-    loop {
-        unsafe {
-            asm!("cli");
-            asm!("hlt");
-        }
-    }
-}
